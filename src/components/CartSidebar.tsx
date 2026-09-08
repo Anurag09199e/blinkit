@@ -21,7 +21,20 @@ export const CartSidebar: React.FC = () => {
         const orderSummary = cart.map(item => `${item.quantity}x ${item.name}`).join('%0A');
         const totalAmount = cartTotal + 15;
 
-        const message = `*New Order from Blinkit Clone*%0A%0A*Customer Details:*%0AName: ${user?.name}%0APhone: ${user?.phone}%0A%0A*Order Details:*%0A${orderSummary}%0A%0A*Total Amount:* ₹${totalAmount}`;
+        // Ensure we have the latest user data (avoiding stale closure if just logged in)
+        let currentUser = user;
+        if (!currentUser) {
+            const savedUser = localStorage.getItem('blinkit_user');
+            if (savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                } catch (e) {
+                    console.error("Failed to parse user from localStorage");
+                }
+            }
+        }
+
+        const message = `*New Order from Blinkit Clone*%0A%0A*Customer Details:*%0AName: ${currentUser?.name}%0APhone: ${currentUser?.phone}%0A%0A*Order Details:*%0A${orderSummary}%0A%0A*Total Amount:* ₹${totalAmount}`;
 
         window.open(`https://wa.me/918949636194?text=${message}`, '_blank');
         setIsLoginModalOpen(false);
